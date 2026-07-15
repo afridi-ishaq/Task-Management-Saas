@@ -1,19 +1,19 @@
 export default function Testimonials() {
   const testimonials = [
     {
-      name: "Sarah Johnson",
+      name: "Fahimullah Dawar",
       role: "Product Manager",
       review:
         "TaskFlow completely transformed the way our team manages projects and deadlines.",
     },
     {
-      name: "Michael Chen",
+      name: "Ishaq Afridi",
       role: "Startup Founder",
       review:
         "The clean interface and powerful features helped us improve productivity immediately.",
     },
     {
-      name: "Emma Wilson",
+      name: "Hammad Khan",
       role: "Team Lead",
       review:
         "We've tried many tools, but TaskFlow is by far the easiest and most effective.",
