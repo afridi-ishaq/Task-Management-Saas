@@ -36,7 +36,7 @@ export default function Hero() {
           <div className="grid md:grid-cols-3 gap-6">
             <div className="bg-slate-800 p-6 rounded-xl">
               <h3 className="font-semibold text-blue-400">
-                Total Taskss
+                Total Tasks
               </h3>
               <p className="text-4xl font-bold mt-4">
                 128
