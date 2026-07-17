@@ -2,8 +2,12 @@
 
 import { useState } from "react";
 import KanbanColumn from "@/components/KanbanColumn";
+import CreateTaskModal from "@/components/CreateTaskModel";
 
 export default function BoardPage() {
+  const [isModalOpen, setIsModalOpen] =
+    useState(false);
+
   const [tasks, setTasks] = useState([
     {
       id: 1,
@@ -24,6 +28,10 @@ export default function BoardPage() {
       status: "completed",
     },
   ]);
+
+  const createTask = (newTask) => {
+    setTasks((prev) => [newTask, ...prev]);
+  };
 
   const moveTask = (id) => {
     setTasks((prev) =>
@@ -54,9 +62,18 @@ export default function BoardPage() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-white p-8">
-      <h1 className="text-4xl font-bold mb-8">
-        Kanban Board
-      </h1>
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-4xl font-bold">
+          Kanban Board
+        </h1>
+
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="bg-green-600 hover:bg-green-700 px-5 py-3 rounded-lg"
+        >
+          New Task
+        </button>
+      </div>
 
       <div className="grid md:grid-cols-3 gap-6">
         <KanbanColumn
@@ -85,6 +102,14 @@ export default function BoardPage() {
           moveTask={moveTask}
         />
       </div>
+
+      <CreateTaskModal
+        isOpen={isModalOpen}
+        onClose={() =>
+          setIsModalOpen(false)
+        }
+        onCreate={createTask}
+      />
     </div>
   );
 }
