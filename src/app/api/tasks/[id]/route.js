@@ -43,3 +43,34 @@ export async function PUT(
     );
   }
 }
+export async function DELETE(
+  request,
+  { params }
+) {
+  try {
+    await connectDB();
+
+    await Task.findByIdAndDelete(
+      params.id
+    );
+
+    return NextResponse.json({
+      success: true,
+      message:
+        "Task deleted successfully",
+    });
+  } catch (error) {
+    console.log(error);
+
+    return NextResponse.json(
+      {
+        success: false,
+        message:
+          "Failed to delete task",
+      },
+      {
+        status: 500,
+      }
+    );
+  }
+}

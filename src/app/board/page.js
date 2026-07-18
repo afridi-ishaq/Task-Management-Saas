@@ -10,6 +10,27 @@ useState(false);
 
 const [tasks, setTasks] = useState([]);
 
+const deleteTask = async (id) => {
+  try {
+    const response =
+      await fetch(
+        `/api/tasks/${id}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+    const data =
+      await response.json();
+
+    if (data.success) {
+      fetchTasks();
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 const fetchTasks = async () => {
 try {
 const response = await fetch(
@@ -67,40 +88,56 @@ priority: "medium",
 
 };
 
-const moveTask = (id) => {
-setTasks((prev) =>
-prev.map((task) => {
-if (task._id !== id)
-return task;
+const moveTask = async (id) => {
+  try {
+    const currentTask =
+      tasks.find(
+        (task) =>
+          task._id === id
+      );
 
+    if (!currentTask) return;
 
-    if (task.status === "todo") {
-      return {
-        ...task,
-        status:
-          "in-progress",
-      };
-    }
+    let newStatus = "todo";
 
     if (
-      task.status ===
+      currentTask.status ===
+      "todo"
+    ) {
+      newStatus =
+        "in-progress";
+    } else if (
+      currentTask.status ===
       "in-progress"
     ) {
-      return {
-        ...task,
-        status:
-          "completed",
-      };
+      newStatus =
+        "completed";
     }
 
-    return {
-      ...task,
-      status: "todo",
-    };
-  })
-);
+    const response =
+      await fetch(
+        `/api/tasks/${id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type":
+              "application/json",
+          },
+          body: JSON.stringify({
+            status: newStatus,
+          }),
+        }
+      );
 
+    const data =
+      await response.json();
 
+    if (data.success) {
+      fetchTasks();
+    }
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 return ( <div className="min-h-screen bg-slate-950 text-white p-8"> <div className="flex justify-between items-center mb-8"> <h1 className="text-4xl font-bold">
@@ -126,6 +163,7 @@ Kanban Board </h1>
           "todo"
       )}
       moveTask={moveTask}
+      deleteTask={deleteTask}
     />
 
     <KanbanColumn
@@ -136,6 +174,7 @@ Kanban Board </h1>
           "in-progress"
       )}
       moveTask={moveTask}
+      deleteTask={deleteTask}
     />
 
     <KanbanColumn
@@ -146,6 +185,7 @@ Kanban Board </h1>
           "completed"
       )}
       moveTask={moveTask}
+      deleteTask={deleteTask}
     />
   </div>
 
