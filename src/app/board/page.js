@@ -152,6 +152,14 @@ Kanban Board </h1>
     >
       New Task
     </button>
+    <button
+  onClick={() =>
+    deleteTask(task._id)
+  }
+  className="mt-2 bg-red-600 px-3 py-2 rounded-lg text-sm w-full"
+>
+  Delete
+</button>
   </div>
 
   <div className="grid md:grid-cols-3 gap-6">
