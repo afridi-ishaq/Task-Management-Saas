@@ -1,115 +1,163 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import KanbanColumn from "@/components/KanbanColumn";
 import CreateTaskModal from "@/components/CreateTaskModel";
 
 export default function BoardPage() {
-  const [isModalOpen, setIsModalOpen] =
-    useState(false);
+const [isModalOpen, setIsModalOpen] =
+useState(false);
 
-  const [tasks, setTasks] = useState([
-    {
-      id: 1,
-      title: "Design Homepage",
-      description: "Create SaaS landing page",
+const [tasks, setTasks] = useState([]);
+
+const fetchTasks = async () => {
+try {
+const response = await fetch(
+"/api/tasks"
+);
+
+
+  const data =
+    await response.json();
+
+  if (data.success) {
+    setTasks(data.tasks);
+  }
+} catch (error) {
+  console.log(error);
+}
+
+
+};
+
+useEffect(() => {
+fetchTasks();
+}, []);
+
+const createTask = async (
+newTask
+) => {
+try {
+const response =
+await fetch("/api/tasks", {
+method: "POST",
+headers: {
+"Content-Type":
+"application/json",
+},
+body: JSON.stringify({
+title: newTask.title,
+description:
+newTask.description,
+priority: "medium",
+}),
+});
+
+
+  const data =
+    await response.json();
+
+  if (data.success) {
+    fetchTasks();
+  }
+} catch (error) {
+  console.log(error);
+}
+
+
+};
+
+const moveTask = (id) => {
+setTasks((prev) =>
+prev.map((task) => {
+if (task._id !== id)
+return task;
+
+
+    if (task.status === "todo") {
+      return {
+        ...task,
+        status:
+          "in-progress",
+      };
+    }
+
+    if (
+      task.status ===
+      "in-progress"
+    ) {
+      return {
+        ...task,
+        status:
+          "completed",
+      };
+    }
+
+    return {
+      ...task,
       status: "todo",
-    },
-    {
-      id: 2,
-      title: "Connect MongoDB",
-      description: "Setup database models",
-      status: "in-progress",
-    },
-    {
-      id: 3,
-      title: "Login System",
-      description: "JWT Authentication",
-      status: "completed",
-    },
-  ]);
+    };
+  })
+);
 
-  const createTask = (newTask) => {
-    setTasks((prev) => [newTask, ...prev]);
-  };
 
-  const moveTask = (id) => {
-    setTasks((prev) =>
-      prev.map((task) => {
-        if (task.id !== id) return task;
+};
 
-        if (task.status === "todo") {
-          return {
-            ...task,
-            status: "in-progress",
-          };
-        }
+return ( <div className="min-h-screen bg-slate-950 text-white p-8"> <div className="flex justify-between items-center mb-8"> <h1 className="text-4xl font-bold">
+Kanban Board </h1>
 
-        if (task.status === "in-progress") {
-          return {
-            ...task,
-            status: "completed",
-          };
-        }
 
-        return {
-          ...task,
-          status: "todo",
-        };
-      })
-    );
-  };
+    <button
+      onClick={() =>
+        setIsModalOpen(true)
+      }
+      className="bg-green-600 hover:bg-green-700 px-5 py-3 rounded-lg"
+    >
+      New Task
+    </button>
+  </div>
 
-  return (
-    <div className="min-h-screen bg-slate-950 text-white p-8">
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-4xl font-bold">
-          Kanban Board
-        </h1>
+  <div className="grid md:grid-cols-3 gap-6">
+    <KanbanColumn
+      title="To Do"
+      tasks={tasks.filter(
+        (task) =>
+          task.status ===
+          "todo"
+      )}
+      moveTask={moveTask}
+    />
 
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className="bg-green-600 hover:bg-green-700 px-5 py-3 rounded-lg"
-        >
-          New Task
-        </button>
-      </div>
+    <KanbanColumn
+      title="In Progress"
+      tasks={tasks.filter(
+        (task) =>
+          task.status ===
+          "in-progress"
+      )}
+      moveTask={moveTask}
+    />
 
-      <div className="grid md:grid-cols-3 gap-6">
-        <KanbanColumn
-          title="To Do"
-          tasks={tasks.filter(
-            (task) => task.status === "todo"
-          )}
-          moveTask={moveTask}
-        />
+    <KanbanColumn
+      title="Completed"
+      tasks={tasks.filter(
+        (task) =>
+          task.status ===
+          "completed"
+      )}
+      moveTask={moveTask}
+    />
+  </div>
 
-        <KanbanColumn
-          title="In Progress"
-          tasks={tasks.filter(
-            (task) =>
-              task.status === "in-progress"
-          )}
-          moveTask={moveTask}
-        />
+  <CreateTaskModal
+    isOpen={isModalOpen}
+    onClose={() =>
+      setIsModalOpen(false)
+    }
+    onCreate={createTask}
+  />
+</div>
 
-        <KanbanColumn
-          title="Completed"
-          tasks={tasks.filter(
-            (task) =>
-              task.status === "completed"
-          )}
-          moveTask={moveTask}
-        />
-      </div>
 
-      <CreateTaskModal
-        isOpen={isModalOpen}
-        onClose={() =>
-          setIsModalOpen(false)
-        }
-        onCreate={createTask}
-      />
-    </div>
-  );
+);
 }

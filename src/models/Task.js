@@ -31,26 +31,11 @@ const TaskSchema = new mongoose.Schema(
       ],
       default: "medium",
     },
-
-    projectId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Project",
-      required: true,
-    },
-
-    userId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
   },
   {
     timestamps: true,
   }
 );
 
-const Task =
-  mongoose.models.Task ||
+export default mongoose.models.Task ||
   mongoose.model("Task", TaskSchema);
-
-export default Task;

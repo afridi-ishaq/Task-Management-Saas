@@ -7,8 +7,9 @@ export async function GET() {
   try {
     await connectDB();
 
-    const tasks = await Task.find()
-      .sort({ createdAt: -1 });
+    const tasks = await Task.find().sort({
+      createdAt: -1,
+    });
 
     return NextResponse.json({
       success: true,
@@ -34,17 +35,14 @@ export async function POST(request) {
     const {
       title,
       description,
-      projectId,
-      userId,
       priority,
     } = await request.json();
 
     const task = await Task.create({
       title,
       description,
-      projectId,
-      userId,
       priority,
+      status: "todo",
     });
 
     return NextResponse.json(
